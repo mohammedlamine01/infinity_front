@@ -1,61 +1,4 @@
-import axios from 'axios';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
-
-// Create axios instance
-const apiClient = axios.create({
-  baseURL: API_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// Add token to every request if available
-apiClient.interceptors.request.use(
-  (config) => {
-    if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('token');
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-// Handle token refresh automatically
-apiClient.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-
-    // Token expired — try refresh
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-
-      try {
-        const refreshToken = localStorage.getItem('refreshToken');
-        if (refreshToken) {
-          const { data } = await axios.post(`${API_URL}/auth/refresh`, { token: refreshToken });
-          localStorage.setItem('token', data.token);
-          originalRequest.headers.Authorization = `Bearer ${data.token}`;
-          return apiClient(originalRequest);
-        }
-      } catch (refreshError) {
-        // Refresh failed — force logout
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
-        if (typeof window !== 'undefined') {
-          window.location.href = '/login';
-        }
-        return Promise.reject(refreshError);
-      }
-    }
-
-    return Promise.reject(error);
-  }
-);
+import apiClient from './api';
 
 // ==================== AUTH FUNCTIONS ====================
 
@@ -96,10 +39,20 @@ export const registerUser = async (formData) => {
 export const logoutUser = async () => {
   try {
     const token = localStorage.getItem('token');
+    const refreshToken = localStorage.getItem('refreshToken');
     if (token) {
-      await apiClient.post('/auth/logout');
+      // Try to logout on server, but don't fail if it doesn't work
+      try {
+        const config = { headers: { Authorization: `Bearer ${token}` } };
+        const body = refreshToken ? { token: refreshToken } : null;
+        await apiClient.post('/auth/logout', body, config);
+      } catch (logoutError) {
+        // Silently ignore logout errors - token will be cleared locally anyway
+        console.log('Server logout skipped (token may be expired)');
+      }
     }
   } catch (error) {
+    // If logout fails (e.g. token already invalid), still clear local storage.
     console.error('Logout error:', error);
   } finally {
     localStorage.removeItem('token');

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, User, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import DarkModeToggle from '@/components/DarkModeToggle';
 import LanguageSelector from '@/components/LanguageSelector';
@@ -15,7 +15,7 @@ import { getTranslation } from '@/utils/i18n';
 export default function Navbar() {
   const router = useRouter();
   const { language } = useLanguage();
-  const { isAuth, logout } = useAuth();
+  const { isAuth, user, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const t = (key) => getTranslation(language, key);
@@ -24,6 +24,9 @@ export default function Navbar() {
     await logout();
     router.push('/');
   };
+
+  // Check if user is admin
+  const isAdmin = user?.role === 'admin';
 
   const navLinks = [
     { href: '/', label: t('home') },
@@ -38,17 +41,19 @@ export default function Navbar() {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <div className="relative w-10 h-10">
+          <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity group">
+            <div className="relative w-12 h-12">
               <Image
-                src="/infinity_club_logo.png"
-                alt="Infinity Club Logo"
+                src="/assest/ChatGPT Image 23 oct. 2025, 11_35_49.png"
+                alt="Infinity Logo"
                 fill
-                className="object-contain"
+                className="object-contain transition-all duration-700 ease-in-out group-hover:animate-spin group-hover:animation-duration-[2000ms] drop-shadow-[0_0_8px_rgba(99,183,123,0.6)]"
                 priority
               />
             </div>
-            <span className="text-xl font-bold hidden sm:inline">{t('clubName')}</span>
+            <span className="text-2xl font-bold bg-gradient-to-r from-primary via-primary to-primary/70 bg-clip-text text-transparent hidden sm:inline">
+              Infinity
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -66,14 +71,28 @@ export default function Navbar() {
 
           {/* Actions */}
           <div className="flex items-center gap-2">
+            {/* Search Icon - Visible to all users */}
+            <Button asChild variant="ghost" size="icon" title={t('searchMembers')}>
+              <Link href="/search">
+                <Search className="h-5 w-5" />
+              </Link>
+            </Button>
+            
             <DarkModeToggle />
             <LanguageSelector />
 
             {isAuth ? (
               <div className="hidden md:flex items-center gap-2">
-                <Button asChild variant="outline">
-                  <Link href="/dashboard">{t('dashboard')}</Link>
+                <Button asChild variant="ghost" size="icon" title={t('profile')}>
+                  <Link href="/profile">
+                    <User className="h-5 w-5" />
+                  </Link>
                 </Button>
+                {isAdmin && (
+                  <Button asChild variant="outline">
+                    <Link href="/dashboard">{t('dashboard')}</Link>
+                  </Button>
+                )}
                 <Button onClick={handleLogout} variant="destructive">
                   {t('logout')}
                 </Button>
@@ -117,11 +136,27 @@ export default function Navbar() {
               ))}
               
               <div className="flex flex-col gap-2 mt-4">
+                {/* Search Button - Visible to all users */}
+                <Button asChild variant="outline" className="w-full">
+                  <Link href="/search">
+                    <Search className="h-4 w-4 mr-2" />
+                    {t('searchMembers')}
+                  </Link>
+                </Button>
+                
                 {isAuth ? (
                   <>
                     <Button asChild variant="outline" className="w-full">
-                      <Link href="/dashboard">{t('dashboard')}</Link>
+                      <Link href="/profile">
+                        <User className="h-4 w-4 mr-2" />
+                        {t('profile')}
+                      </Link>
                     </Button>
+                    {isAdmin && (
+                      <Button asChild variant="outline" className="w-full">
+                        <Link href="/dashboard">{t('dashboard')}</Link>
+                      </Button>
+                    )}
                     <Button onClick={handleLogout} variant="destructive" className="w-full">
                       {t('logout')}
                     </Button>

@@ -7,11 +7,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { getTranslation  } from '@/utils/i18n';
 import { registerUser } from '@/utils/auth';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Loader2, AlertCircle, CheckCircle } from 'lucide-react';
 import axios from 'axios';
 
 export default function RegisterFormStep2({ formData, setFormData, onBack }) {
@@ -22,6 +23,8 @@ export default function RegisterFormStep2({ formData, setFormData, onBack }) {
   const [loading, setLoading] = useState(false);
   const [specialites, setSpecialites] = useState([]);
   const [loadingSpecialites, setLoadingSpecialites] = useState(true);
+  const [message, setMessage] = useState(null);
+  const [messageType, setMessageType] = useState(null); // 'success' or 'error'
 
   // Fetch specialites on component mount
   useEffect(() => {
@@ -61,19 +64,23 @@ export default function RegisterFormStep2({ formData, setFormData, onBack }) {
 
     // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
+      const errorMsg = language === 'ar'
+        ? 'كلمات المرور غير متطابقة'
+        : language === 'fr'
+        ? 'Les mots de passe ne correspondent pas'
+        : 'Passwords do not match';
+      setMessage(errorMsg);
+      setMessageType('error');
       toast({
-        title:
-          language === 'ar'
-            ? 'كلمات المرور غير متطابقة'
-            : language === 'fr'
-            ? 'Les mots de passe ne correspondent pas'
-            : 'Passwords do not match',
+        title: errorMsg,
         variant: 'destructive',
       });
       return;
     }
 
     setLoading(true);
+    setMessage(null);
+    setMessageType(null);
 
     try {
       // Prepare data according to API requirements
@@ -89,6 +96,10 @@ export default function RegisterFormStep2({ formData, setFormData, onBack }) {
 
       const response = await registerUser(registrationData);
 
+      const successMsg = response.message || t('registerSuccess');
+      setMessage(successMsg);
+      setMessageType('success');
+
       toast({
         title: t('registerSuccess'),
         description: response.message || '',
@@ -99,7 +110,21 @@ export default function RegisterFormStep2({ formData, setFormData, onBack }) {
       }, 2000);
     } catch (error) {
       console.error('Registration error:', error);
-      const errorMessage = error.response?.data?.message || t('registerError');
+      let errorMessage = error.response?.data?.message || error.response?.data?.errors?.email?.[0] || t('registerError');
+      
+      // If the backend returns "The email has already been taken.", display in current language
+      if (errorMessage === "The email has already been taken.") {
+        if (language === 'ar') {
+          errorMessage = "البريد الإلكتروني مأخوذ بالفعل.";
+        } else if (language === 'fr') {
+          errorMessage = "L'email a déjà été pris.";
+        } else {
+          errorMessage = "The email has already been taken.";
+        }
+      }
+      
+      setMessage(errorMessage);
+      setMessageType('error');
       toast({
         title: t('registerError'),
         description: errorMessage,
@@ -123,6 +148,18 @@ export default function RegisterFormStep2({ formData, setFormData, onBack }) {
         </CardDescription>
       </CardHeader>
       <CardContent>
+        {message && (
+          <Alert className={`mb-4 ${messageType === 'error' ? 'border-red-500 bg-red-50' : 'border-green-500 bg-green-50'}`}>
+            {messageType === 'error' ? (
+              <AlertCircle className="h-4 w-4 text-red-500" />
+            ) : (
+              <CheckCircle className="h-4 w-4 text-green-500" />
+            )}
+            <AlertDescription className={messageType === 'error' ? 'text-red-700' : 'text-green-700'}>
+              {message}
+            </AlertDescription>
+          </Alert>
+        )}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="id_sp">{t('specialtyLabel')}</Label>

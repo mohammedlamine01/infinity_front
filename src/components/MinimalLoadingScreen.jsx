@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 
 /**
  * MinimalLoadingScreen - Ultra-minimal, fast-loading splash screen
@@ -44,35 +45,17 @@ export default function MinimalLoadingScreen({ isLoading }) {
           {/* Pulsing background circle */}
           <div className="absolute inset-0 -m-8 bg-primary/10 rounded-full blur-2xl animate-pulse"></div>
           
-          {/* Brand text */}
-          <h1 className="relative text-5xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-            IC
-          </h1>
-        </div>
-
-        {/* Modern Spinner */}
-        <div className="relative w-12 h-12">
-          {/* Spinning circle */}
-          <svg
-            className="animate-spin"
-            viewBox="0 0 50 50"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <circle
-              className="opacity-25"
-              cx="25"
-              cy="25"
-              r="20"
-              stroke="currentColor"
-              strokeWidth="4"
-            ></circle>
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M25 5 A20 20 0 0 1 45 25"
-            ></path>
-          </svg>
+          {/* Infinity Logo */}
+          <div className="relative w-16 h-16">
+            <Image
+              src="/assest/ChatGPT Image 23 oct. 2025, 11_35_49.png"
+              alt="Infinity Logo"
+              fill
+              className="object-contain animate-spin"
+              style={{ animationDuration: '2s' }}
+              priority
+            />
+          </div>
         </div>
 
         {/* Loading text */}

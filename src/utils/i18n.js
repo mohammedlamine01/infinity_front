@@ -11,14 +11,16 @@ export const translations = {
     register: 'Register',
     logout: 'Logout',
     dashboard: 'Dashboard',
-    
+    search: 'Search',
+    searchMembers: 'Search Members',
+
     // Hero
     heroTitle: 'Welcome to Infinity Club',
     heroSubtitle: 'A community of innovators, developers, and researchers at University of BBA.',
     discoverProjects: 'Discover Our Projects',
     learnMore: 'Learn More',
     scrollDown: 'Scroll Down',
-    
+
     // About
     aboutTitle: 'About Us',
     aboutDescription: 'Infinity Club is a student organization dedicated to promoting innovation, technology, and collaboration among students at the University of BBA.',
@@ -29,22 +31,22 @@ export const translations = {
     teamwork: 'Teamwork',
     teamworkDesc: 'Collaborate with talented individuals on real projects',
     community: 'Community',
-    
+
     // Activities
     activitiesTitle: 'Our Activities',
     activitiesDescription: 'Join us in various workshops, hackathons, and tech talks',
-    
+
     // Team
     teamTitle: 'Our Team',
     teamDescription: 'Meet the passionate individuals behind Infinity Club',
-    
+
     // Footer
     footerDescription: 'Building the future, one line of code at a time.',
     followUs: 'Follow Us',
     email: 'Email',
-    clubName: 'Infinity Club',
+    clubName: 'Infinity',
     copyright: 'All rights reserved.',
-    
+
     // Auth
     emailLabel: 'Email',
     passwordLabel: 'Password',
@@ -59,21 +61,67 @@ export const translations = {
     previousStep: 'Previous Step',
     alreadyHaveAccount: 'Already have an account?',
     dontHaveAccount: "Don't have an account?",
-    
+
     // Messages
     loginSuccess: 'Login successful!',
     loginError: 'Login failed. Please check your credentials.',
     registerSuccess: 'Registration successful! Please wait for admin validation.',
     registerError: 'Registration failed. Please try again.',
     accountNotValidated: 'Your account has not been validated yet. Please wait for administrator confirmation.',
-    
+
     // Dashboard
     welcomeBack: 'Welcome back',
     yourProfile: 'Your Profile',
+
+    // Profile
+    profile: 'Profile',
+    myProfile: 'My Profile',
+    myLinks: 'My Professional Links',
+    addLink: 'Add Link',
+    editLink: 'Edit Link',
+    deleteLink: 'Delete Link',
+    linkTitle: 'Link Title',
+    linkUrl: 'URL',
+    linkDescription: 'Description',
+    noLinks: 'No links yet',
+    noLinksDesc: 'Add your first professional link',
+    save: 'Save',
+    cancel: 'Cancel',
+    delete: 'Delete',
+    edit: 'Edit',
+    confirmDelete: 'Are you sure you want to delete this link?',
+    linkAdded: 'Link added successfully',
+    linkUpdated: 'Link updated successfully',
+    linkDeleted: 'Link deleted successfully',
+    memberSince: 'Member since',
+    role: 'Role',
+    department: 'Department',
+    specialty: 'Specialty',
+
+    // Search & Browse
+    searchPlaceholder: 'Search by name, email, or role...',
+    allMembers: 'All Members',
+    byCategory: 'By Category',
+    selectDepartment: 'Select Department',
+    selectSpecialty: 'Select Specialty',
+    clearFilters: 'Clear Filters',
+    noResults: 'No members found',
+    noResultsDesc: 'Try adjusting your filters or search terms',
+    loading: 'Loading...',
+    membersFound: 'members found',
+    memberFound: 'member found',
+    viewProfile: 'View Profile',
+    gridView: 'Grid View',
+    listView: 'List View',
+    filterBy: 'Filter By',
+    startSearch: 'Start Your Search',
+    startSearchDesc: 'Select a department and specialty above, or use the search bar to find members',
+    specialtyIn: 'Specialty in',
+    showingAll: 'Showing all members',
+    switchCategory: 'Switch to "By Category" to filter by department or specialty',
   },
-  
+
   fr: {
-    // Navbar
     home: 'Accueil',
     about: 'À propos',
     activities: 'Activités',
@@ -84,15 +132,15 @@ export const translations = {
     register: 'Inscription',
     logout: 'Déconnexion',
     dashboard: 'Tableau de bord',
-    
-    // Hero
+    search: 'Rechercher',
+    searchMembers: 'Rechercher des membres',
+
     heroTitle: 'Bienvenue au Club Infinity',
     heroSubtitle: 'Une communauté d\'innovateurs, de développeurs et de chercheurs à l\'Université de BBA.',
     discoverProjects: 'Découvrir nos projets',
     learnMore: 'En savoir plus',
     scrollDown: 'Défiler vers le bas',
-    
-    // About
+
     aboutTitle: 'À propos de nous',
     aboutDescription: 'Infinity Club est une organisation étudiante dédiée à la promotion de l\'innovation, de la technologie et de la collaboration entre étudiants à l\'Université de BBA.',
     innovation: 'Innovation',
@@ -102,23 +150,19 @@ export const translations = {
     teamwork: 'Travail d\'équipe',
     teamworkDesc: 'Collaborez avec des personnes talentueuses sur de vrais projets',
     community: 'Communauté',
-    
-    // Activities
+
     activitiesTitle: 'Nos activités',
     activitiesDescription: 'Rejoignez-nous pour divers ateliers, hackathons et conférences tech',
-    
-    // Team
+
     teamTitle: 'Notre équipe',
     teamDescription: 'Rencontrez les personnes passionnées derrière Infinity Club',
-    
-    // Footer
+
     footerDescription: 'Construire l\'avenir, une ligne de code à la fois.',
     followUs: 'Suivez-nous',
     email: 'Email',
-    clubName: 'Club Infinity',
+    clubName: 'Infinity',
     copyright: 'Tous droits réservés.',
-    
-    // Auth
+
     emailLabel: 'Email',
     passwordLabel: 'Mot de passe',
     nameLabel: 'Nom complet',
@@ -132,21 +176,63 @@ export const translations = {
     previousStep: 'Étape précédente',
     alreadyHaveAccount: 'Vous avez déjà un compte ?',
     dontHaveAccount: 'Vous n\'avez pas de compte ?',
-    
-    // Messages
+
     loginSuccess: 'Connexion réussie !',
     loginError: 'Échec de la connexion. Veuillez vérifier vos identifiants.',
     registerSuccess: 'Inscription réussie ! Veuillez attendre la validation de l\'administrateur.',
     registerError: 'Échec de l\'inscription. Veuillez réessayer.',
     accountNotValidated: 'Votre compte n\'a pas encore été validé. Veuillez attendre la confirmation de l\'administrateur.',
-    
-    // Dashboard
+
     welcomeBack: 'Bon retour',
     yourProfile: 'Votre profil',
+
+    profile: 'Profil',
+    myProfile: 'Mon Profil',
+    myLinks: 'Mes Liens Professionnels',
+    addLink: 'Ajouter un lien',
+    editLink: 'Modifier le lien',
+    deleteLink: 'Supprimer le lien',
+    linkTitle: 'Titre du lien',
+    linkUrl: 'URL',
+    linkDescription: 'Description',
+    noLinks: 'Aucun lien',
+    noLinksDesc: 'Ajoutez votre premier lien professionnel',
+    save: 'Enregistrer',
+    cancel: 'Annuler',
+    delete: 'Supprimer',
+    edit: 'Modifier',
+    confirmDelete: 'Êtes-vous sûr de vouloir supprimer ce lien?',
+    linkAdded: 'Lien ajouté avec succès',
+    linkUpdated: 'Lien mis à jour avec succès',
+    linkDeleted: 'Lien supprimé avec succès',
+    memberSince: 'Membre depuis',
+    role: 'Rôle',
+    department: 'Département',
+    specialty: 'Spécialité',
+
+    searchPlaceholder: 'Rechercher par nom, email ou rôle...',
+    allMembers: 'Tous les membres',
+    byCategory: 'Par catégorie',
+    selectDepartment: 'Sélectionner un département',
+    selectSpecialty: 'Sélectionner une spécialité',
+    clearFilters: 'Effacer les filtres',
+    noResults: 'Aucun membre trouvé',
+    noResultsDesc: 'Essayez d\'ajuster vos filtres ou termes de recherche',
+    loading: 'Chargement...',
+    membersFound: 'membres trouvés',
+    memberFound: 'membre trouvé',
+    viewProfile: 'Voir le profil',
+    gridView: 'Vue en grille',
+    listView: 'Vue en liste',
+    filterBy: 'Filtrer par',
+    startSearch: 'Commencez votre recherche',
+    startSearchDesc: 'Sélectionnez un département et une spécialité ci-dessus, ou utilisez la barre de recherche pour trouver des membres',
+    specialtyIn: 'Spécialité en',
+    showingAll: 'Affichage de tous les membres',
+    switchCategory: 'Passez à "Par catégorie" pour filtrer par département ou spécialité',
   },
-  
+
   ar: {
-    // Navbar
     home: 'الرئيسية',
     about: 'عن النادي',
     activities: 'الأنشطة',
@@ -157,15 +243,15 @@ export const translations = {
     register: 'التسجيل',
     logout: 'تسجيل الخروج',
     dashboard: 'لوحة التحكم',
-    
-    // Hero
+    search: 'بحث',
+    searchMembers: 'البحث عن الأعضاء',
+
     heroTitle: 'مرحبًا بك في نادي إنفينيتي',
     heroSubtitle: 'مجتمع من المبتكرين والمطورين والباحثين في جامعة BBA.',
     discoverProjects: 'اكتشف مشاريعنا',
     learnMore: 'اعرف المزيد',
     scrollDown: 'انتقل لأسفل',
-    
-    // About
+
     aboutTitle: 'عن النادي',
     aboutDescription: 'نادي إنفينيتي هو منظمة طلابية مكرسة لتعزيز الابتكار والتكنولوجيا والتعاون بين الطلاب في جامعة BBA.',
     innovation: 'الابتكار',
@@ -175,23 +261,19 @@ export const translations = {
     teamwork: 'العمل الجماعي',
     teamworkDesc: 'تعاون مع أفراد موهوبين في مشاريع حقيقية',
     community: 'المجتمع',
-    
-    // Activities
+
     activitiesTitle: 'أنشطتنا',
     activitiesDescription: 'انضم إلينا في ورش العمل والهاكاثون والمحاضرات التقنية المختلفة',
-    
-    // Team
+
     teamTitle: 'فريقنا',
     teamDescription: 'تعرف على الأفراد المتحمسين وراء نادي إنفينيتي',
-    
-    // Footer
+
     footerDescription: 'بناء المستقبل، سطر برمجي واحد في كل مرة.',
     followUs: 'تابعنا',
     email: 'البريد الإلكتروني',
-    clubName: 'نادي إنفينيتي',
+    clubName: 'إنفينيتي',
     copyright: 'جميع الحقوق محفوظة.',
-    
-    // Auth
+
     emailLabel: 'البريد الإلكتروني',
     passwordLabel: 'كلمة المرور',
     nameLabel: 'الاسم الكامل',
@@ -205,20 +287,64 @@ export const translations = {
     previousStep: 'الخطوة السابقة',
     alreadyHaveAccount: 'هل لديك حساب بالفعل؟',
     dontHaveAccount: 'ليس لديك حساب؟',
-    
-    // Messages
+
     loginSuccess: 'تم تسجيل الدخول بنجاح!',
     loginError: 'فشل تسجيل الدخول. يرجى التحقق من بيانات الاعتماد الخاصة بك.',
     registerSuccess: 'تم التسجيل بنجاح! يرجى انتظار التحقق من المسؤول.',
     registerError: 'فشل التسجيل. يرجى المحاولة مرة أخرى.',
     accountNotValidated: 'لم يتم التحقق من حسابك بعد. يرجى انتظار تأكيد المسؤول.',
-    
-    // Dashboard
+
     welcomeBack: 'مرحبًا بعودتك',
     yourProfile: 'ملفك الشخصي',
+
+    profile: 'الملف الشخصي',
+    myProfile: 'ملفي الشخصي',
+    myLinks: 'روابطي المهنية',
+    addLink: 'إضافة رابط',
+    editLink: 'تعديل الرابط',
+    deleteLink: 'حذف الرابط',
+    linkTitle: 'عنوان الرابط',
+    linkUrl: 'الرابط',
+    linkDescription: 'الوصف',
+    noLinks: 'لا توجد روابط',
+    noLinksDesc: 'أضف رابطك المهني الأول',
+    save: 'حفظ',
+    cancel: 'إلغاء',
+    delete: 'حذف',
+    edit: 'تعديل',
+    confirmDelete: 'هل أنت متأكد من حذف هذا الرابط؟',
+    linkAdded: 'تمت إضافة الرابط بنجاح',
+    linkUpdated: 'تم تحديث الرابط بنجاح',
+    linkDeleted: 'تم حذف الرابط بنجاح',
+    memberSince: 'عضو منذ',
+    role: 'الدور',
+    department: 'القسم',
+    specialty: 'التخصص',
+
+    searchPlaceholder: 'البحث بالاسم، البريد الإلكتروني، أو الدور...',
+    allMembers: 'جميع الأعضاء',
+    byCategory: 'حسب الفئة',
+    selectDepartment: 'اختر القسم',
+    selectSpecialty: 'اختر التخصص',
+    clearFilters: 'مسح الفلاتر',
+    noResults: 'لم يتم العثور على أعضاء',
+    noResultsDesc: 'حاول تعديل الفلاتر أو مصطلحات البحث',
+    loading: 'جاري التحميل...',
+    membersFound: 'عضو تم العثور عليهم',
+    memberFound: 'عضو تم العثور عليه',
+    viewProfile: 'عرض الملف الشخصي',
+    gridView: 'عرض الشبكة',
+    listView: 'عرض القائمة',
+    filterBy: 'تصفية حسب',
+    startSearch: 'ابدأ البحث',
+    startSearchDesc: 'اختر قسماً وتخصصاً أعلاه، أو استخدم شريط البحث للعثور على الأعضاء',
+    specialtyIn: 'التخصص في',
+    showingAll: 'عرض جميع الأعضاء',
+    switchCategory: 'انتقل إلى "حسب الفئة" للتصفية حسب القسم أو التخصص',
   },
 };
 
+// Translation helper function
 export const getTranslation = (locale, key) => {
   return translations[locale]?.[key] || translations['en'][key] || key;
 };

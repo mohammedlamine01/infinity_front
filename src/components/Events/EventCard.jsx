@@ -37,9 +37,9 @@ export default function EventCard({ event }) {
     <div className="group bg-white dark:bg-gray-900 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800 hover:shadow-2xl hover:scale-[1.02] transition-all duration-300">
       {/* Event Image */}
       <div className="relative h-48 overflow-hidden bg-gradient-to-br from-indigo-500 to-purple-600">
-        {event.image ? (
+        {(event.image_url || event.image_path || event.image) ? (
           <img
-            src={imagesAPI.getUrl(event.image)}
+            src={event.image_url || imagesAPI.getUrl(event.image_path || event.image)}
             alt={event.name || 'Event'}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
           />

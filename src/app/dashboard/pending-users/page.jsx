@@ -95,27 +95,27 @@ export default function PendingUsersPage() {
   };
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+    <div className="p-4 sm:p-6 lg:p-8">
+      <div className="mb-6 lg:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
           {t('pendingUsers')}
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-2">
+        <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-2">
           {t('reviewAndValidate')}
         </p>
       </div>
 
       {/* Stats Card */}
-      <div className="mb-6 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-6">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center">
-            <Clock className="w-6 h-6 text-white" />
+      <div className="mb-6 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4 sm:p-6">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-amber-500 rounded-full flex items-center justify-center shrink-0">
+            <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
           </div>
-          <div>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+          <div className="flex-1 min-w-0">
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
               {pendingUsers.length}
             </h3>
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 truncate">
               {t('usersAwaitingValidation')}
             </p>
           </div>
@@ -141,68 +141,73 @@ export default function PendingUsersPage() {
           </p>
         </div>
       ) : (
-        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-12">#</TableHead>
-                <TableHead>{t('name')}</TableHead>
-                <TableHead>{t('email')}</TableHead>
-                <TableHead>{t('phone')}</TableHead>
-                <TableHead>{t('specialite')}</TableHead>
-                <TableHead>{t('registered')}</TableHead>
-                <TableHead className="text-right">{t('actions')}</TableHead>
+                <TableHead className="w-12 text-xs sm:text-sm">#</TableHead>
+                <TableHead className="text-xs sm:text-sm">{t('name')}</TableHead>
+                <TableHead className="hidden md:table-cell text-xs sm:text-sm">{t('email')}</TableHead>
+                <TableHead className="hidden lg:table-cell text-xs sm:text-sm">{t('phone')}</TableHead>
+                <TableHead className="hidden xl:table-cell text-xs sm:text-sm">{t('specialite')}</TableHead>
+                <TableHead className="hidden sm:table-cell text-xs sm:text-sm">{t('registered')}</TableHead>
+                <TableHead className="text-right text-xs sm:text-sm">{t('actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {pendingUsers.map((user, index) => (
                 <TableRow key={user.id}>
-                  <TableCell className="font-medium text-gray-500 dark:text-gray-400">
+                  <TableCell className="font-medium text-gray-500 dark:text-gray-400 text-xs sm:text-sm">
                     {index + 1}
                   </TableCell>
-                  <TableCell className="font-semibold text-gray-900 dark:text-white">
-                    {user.name || 'N/A'}
+                  <TableCell className="font-semibold text-gray-900 dark:text-white text-xs sm:text-sm">
+                    <div className="min-w-0">
+                      <div className="truncate">{user.name || 'N/A'}</div>
+                      <div className="md:hidden text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">
+                        {user.email || 'N/A'}
+                      </div>
+                    </div>
                   </TableCell>
-                  <TableCell className="text-gray-600 dark:text-gray-400">
+                  <TableCell className="hidden md:table-cell text-gray-600 dark:text-gray-400 text-xs sm:text-sm">
                     <div className="flex items-center gap-2">
-                      <Mail className="w-4 h-4" />
+                      <Mail className="w-4 h-4 shrink-0" />
                       <span className="truncate max-w-xs">{user.email || 'N/A'}</span>
                     </div>
                   </TableCell>
-                  <TableCell className="text-gray-600 dark:text-gray-400">
+                  <TableCell className="hidden lg:table-cell text-gray-600 dark:text-gray-400 text-xs sm:text-sm">
                     <div className="flex items-center gap-2">
-                      <Phone className="w-4 h-4" />
-                      {user.phone || 'N/A'}
+                      <Phone className="w-4 h-4 shrink-0" />
+                      <span className="truncate">{user.phone || 'N/A'}</span>
                     </div>
                   </TableCell>
-                  <TableCell className="text-gray-600 dark:text-gray-400">
+                  <TableCell className="hidden xl:table-cell text-gray-600 dark:text-gray-400 text-xs sm:text-sm">
                     <div className="flex items-center gap-2">
-                      <Building2 className="w-4 h-4" />
-                      {user.id_sp ? getSpecialiteName(user.id_sp) : 'N/A'}
+                      <Building2 className="w-4 h-4 shrink-0" />
+                      <span className="truncate">{user.id_sp ? getSpecialiteName(user.id_sp) : 'N/A'}</span>
                     </div>
                   </TableCell>
-                  <TableCell className="text-gray-600 dark:text-gray-400 text-sm">
+                  <TableCell className="hidden sm:table-cell text-gray-600 dark:text-gray-400 text-xs sm:text-sm">
                     {user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}
                   </TableCell>
                   <TableCell className="text-right">
-                    <div className="flex gap-2 justify-end">
+                    <div className="flex gap-1 sm:gap-2 justify-end">
                       <button
                         onClick={() => handleValidate(user.id)}
                         disabled={validatingId === user.id}
-                        className="flex items-center gap-1 px-3 py-1.5 text-sm bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/30 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex items-center gap-1 px-2 sm:px-3 py-2 text-xs sm:text-sm bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/30 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] active:scale-95"
                         title={t('validate')}
                       >
                         <CheckCircle className="w-4 h-4" />
-                        {t('validate')}
+                        <span className="hidden sm:inline">{t('validate')}</span>
                       </button>
                       <button
                         onClick={() => handleReject(user.id)}
                         disabled={validatingId === user.id}
-                        className="flex items-center gap-1 px-3 py-1.5 text-sm bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex items-center gap-1 px-2 sm:px-3 py-2 text-xs sm:text-sm bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] active:scale-95"
                         title={t('reject')}
                       >
                         <XCircle className="w-4 h-4" />
-                        {t('reject')}
+                        <span className="hidden sm:inline">{t('reject')}</span>
                       </button>
                     </div>
                   </TableCell>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { useLoading } from '@/contexts/LoadingContext';
 
 export default function LoadingPage() {
@@ -32,15 +33,21 @@ export default function LoadingPage() {
       }`}
     >
       <div className="flex flex-col items-center space-y-6 p-8">
-        {/* Spinner */}
+        {/* Infinity Logo */}
         <div className="relative">
-          {/* Outer spinning ring */}
-          <div className="h-16 w-16 rounded-full border-4 border-muted animate-spin border-t-primary"></div>
-          
-          {/* Inner pulsing circle */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="h-8 w-8 rounded-full bg-primary/20 animate-pulse"></div>
+          <div className="relative w-20 h-20">
+            <Image
+              src="/assest/ChatGPT Image 23 oct. 2025, 11_35_49.png"
+              alt="Infinity Logo"
+              fill
+              className="object-contain animate-spin"
+              style={{ animationDuration: '2s' }}
+              priority
+            />
           </div>
+          
+          {/* Glow effect */}
+          <div className="absolute inset-0 rounded-full bg-primary/20 blur-xl animate-pulse"></div>
         </div>
 
         {/* Loading message */}

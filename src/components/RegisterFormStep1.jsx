@@ -65,7 +65,7 @@ export default function RegisterFormStep1({ formData, setFormData, onNext }) {
             <Input
               id="phone"
               name="phone"
-              type="tel"
+              type="number"
               placeholder={t('phoneLabel')}
               value={formData.phone}
               onChange={handleChange}

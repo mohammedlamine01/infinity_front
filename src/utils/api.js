@@ -194,13 +194,13 @@ export const linksAPI = {
   getByUser: (userId) => api.get(`/links/${userId}`),
   
   // Add link (requires auth)
-  create: (data) => api.post('/auth/links', data),
+  create: (data) => api.post('/links', data),
   
   // Update link (requires auth)
-  update: (linkId, data) => api.put(`/auth/links/${linkId}`, data),
+  update: (linkId, data) => api.put(`/links/${linkId}`, data),
   
   // Delete link (requires auth)
-  delete: (linkId) => api.delete(`/auth/links/${linkId}`),
+  delete: (linkId) => api.delete(`/links/${linkId}`),
 };
 
 // ============================================
@@ -240,11 +240,38 @@ export const imagesAPI = {
   
   // Get image URL
   getUrl: (imagePath) => {
-    if (!imagePath) return null;
+    // Handle null, undefined, or empty values
+    if (!imagePath) {
+      return null;
+    }
+    
+    // If imagePath is an object (from API response), extract the path
+    let path = imagePath;
+    if (typeof imagePath === 'object' && imagePath !== null) {
+      // First try to get the url (full URL from backend)
+      if (imagePath.url) {
+        return imagePath.url;
+      }
+      // Then try image_url (full URL from transformed response)
+      if (imagePath.image_url) {
+        return imagePath.image_url;
+      }
+      // Then try image_path (relative path)
+      path = imagePath.image_path || imagePath.path || null;
+    }
+    
+    // Ensure we have a valid string path
+    if (!path || typeof path !== 'string' || path.trim() === '') {
+      return null;
+    }
+    
     // If it's already a full URL, return it
-    if (imagePath.startsWith('http')) return imagePath;
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+      return path;
+    }
+    
     // Otherwise, construct the URL
-    return `${API_URL.replace('/api', '')}/storage/${imagePath}`;
+    return `${API_URL.replace('/api', '')}/storage/${path}`;
   },
 };
 

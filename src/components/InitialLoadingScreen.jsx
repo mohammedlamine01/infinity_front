@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 
 /**
  * InitialLoadingScreen - Modern, optimized loading page for app initialization
@@ -56,23 +57,24 @@ export default function InitialLoadingScreen({ isLoading }) {
         <div className="relative">
           <div className="animate-pulse">
             <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
-              Infinity Club
+              Infinity
             </h1>
           </div>
         </div>
 
-        {/* Modern Spinner - Option 1: Circular */}
+        {/* Infinity Logo */}
         <div className="relative w-20 h-20">
-          {/* Outer rotating ring */}
-          <div className="absolute inset-0 rounded-full border-4 border-muted"></div>
+          <Image
+            src="/assest/ChatGPT Image 23 oct. 2025, 11_35_49.png"
+            alt="Infinity Logo"
+            fill
+            className="object-contain animate-spin"
+            style={{ animationDuration: '2s' }}
+            priority
+          />
           
-          {/* Animated spinner */}
-          <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-primary border-r-primary animate-spin"></div>
-          
-          {/* Inner pulsing dot */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-3 h-3 bg-primary rounded-full animate-pulse"></div>
-          </div>
+          {/* Glow effect */}
+          <div className="absolute inset-0 rounded-full bg-primary/20 blur-xl animate-pulse"></div>
         </div>
 
         {/* Loading Text */}

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { Mail, Instagram, Youtube, Facebook } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { getTranslation  } from '@/utils/i18n';
@@ -42,7 +43,19 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* About Section */}
           <div>
-            <h3 className="text-xl font-bold mb-4">{t('clubName')}</h3>
+            <div className="flex items-center gap-3 mb-4 group">
+              <div className="relative w-10 h-10">
+                <Image
+                  src="/assest/ChatGPT Image 23 oct. 2025, 11_35_49.png"
+                  alt="Infinity Logo"
+                  fill
+                  className="object-contain transition-all duration-700 ease-in-out group-hover:animate-spin group-hover:animation-duration-[2000ms] drop-shadow-[0_0_8px_rgba(99,183,123,0.6)]"
+                />
+              </div>
+              <h3 className="text-2xl font-bold bg-gradient-to-r from-primary via-primary to-primary/70 bg-clip-text text-transparent">
+                Infinity
+              </h3>
+            </div>
             <p className="text-muted-foreground">
               {t('footerDescription')}
             </p>

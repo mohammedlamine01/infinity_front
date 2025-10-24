@@ -19,6 +19,7 @@ export default function RootLayout({ children }) {
       <head>
         <title>Infinity Club - University of BBA</title>
         <meta name="description" content="A community of innovators, developers, and researchers" />
+        <link rel="icon" href="/favicon.png" />
       </head>
       <body>
         <ThemeProvider
