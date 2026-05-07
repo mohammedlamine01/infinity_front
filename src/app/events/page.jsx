@@ -1,14 +1,52 @@
 'use client';
 
-import { useState } from 'react';
-import { EventsList } from '@/components/Events';
-import { Calendar, Filter } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { eventsAPI } from '@/utils/api';
+import { useToast } from '@/hooks/use-toast';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Calendar, MapPin, Clock, Loader2 } from 'lucide-react';
 
 export default function EventsPage() {
+  const { toast } = useToast();
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all'); // all, upcoming, past
-  const [selectedType, setSelectedType] = useState('all');
 
-  const eventTypes = ['all', 'seminar', 'workshop', 'conference', 'competition', 'meeting'];
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  const fetchEvents = async () => {
+    try {
+      setLoading(true);
+      const response = await eventsAPI.getAll();
+      const allEvents = response.data.data || response.data || [];
+      setEvents(allEvents);
+    } catch (error) {
+      console.error('Error fetching events:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to load events',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filterEvents = (eventsToFilter) => {
+    if (filter === 'all') return eventsToFilter;
+    
+    const now = new Date();
+    return eventsToFilter.filter((event) => {
+      if (!event.date) return false;
+      const eventDate = new Date(event.date);
+      return filter === 'upcoming' ? eventDate > now : eventDate <= now;
+    });
+  };
+
+  const filteredEvents = filterEvents(events);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-950 dark:to-gray-900">
@@ -30,56 +68,71 @@ export default function EventsPage() {
       {/* Filters Section */}
       <div className="container mx-auto px-4 py-8">
         <div className="bg-white dark:bg-gray-900 rounded-xl shadow-md p-6 mb-8">
-          <div className="flex items-center gap-3 mb-4">
-            <Filter className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Filters</h2>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Time Filter */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Time Period
-              </label>
-              <div className="flex gap-2 flex-wrap">
-                {['all', 'upcoming', 'past'].map((type) => (
-                  <button
-                    key={type}
-                    onClick={() => setFilter(type)}
-                    className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                      filter === type
-                        ? 'bg-indigo-600 text-white shadow-md'
-                        : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-                    }`}
-                  >
-                    {type.charAt(0).toUpperCase() + type.slice(1)}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Event Type Filter */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Event Type
-              </label>
-              <select
-                value={selectedType}
-                onChange={(e) => setSelectedType(e.target.value)}
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Filters</h2>
+          <div className="flex gap-2 flex-wrap">
+            {['all', 'upcoming', 'past'].map((type) => (
+              <button
+                key={type}
+                onClick={() => setFilter(type)}
+                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                  filter === type
+                    ? 'bg-indigo-600 text-white shadow-md'
+                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                }`}
               >
-                {eventTypes.map((type) => (
-                  <option key={type} value={type}>
-                    {type.charAt(0).toUpperCase() + type.slice(1)}
-                  </option>
-                ))}
-              </select>
-            </div>
+                {type.charAt(0).toUpperCase() + type.slice(1)}
+              </button>
+            ))}
           </div>
         </div>
 
         {/* Events List */}
-        <EventsList />
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+          </div>
+        ) : filteredEvents.length === 0 ? (
+          <Card className="text-center py-12">
+            <p className="text-muted-foreground">No {filter === 'all' ? '' : filter} events found</p>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredEvents.map((event) => (
+              <Card key={event.id} className="hover:shadow-lg transition-shadow overflow-hidden">
+                {event.image && (
+                  <div className="h-40 bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center">
+                    <Calendar className="w-12 h-12 text-white opacity-50" />
+                  </div>
+                )}
+                <CardHeader>
+                  <CardTitle className="text-xl">{event.title}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {event.description && (
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{event.description}</p>
+                  )}
+                  
+                  <div className="space-y-2">
+                    {event.date && (
+                      <div className="flex items-center text-sm text-gray-700 dark:text-gray-300">
+                        <Clock className="w-4 h-4 mr-2" />
+                        {new Date(event.date).toLocaleString()}
+                      </div>
+                    )}
+                    {event.location && (
+                      <div className="flex items-center text-sm text-gray-700 dark:text-gray-300">
+                        <MapPin className="w-4 h-4 mr-2" />
+                        {event.location}
+                      </div>
+                    )}
+                  </div>
+                  
+                  <Button className="w-full mt-4">Learn More</Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Call to Action */}

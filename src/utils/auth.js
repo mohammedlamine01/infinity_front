@@ -1,25 +1,21 @@
-import apiClient from './api';
+import { authAPI } from './api';
 
 // ==================== AUTH FUNCTIONS ====================
 
 // Login
 export const loginUser = async (email, password) => {
   try {
-    const { data } = await apiClient.post('/auth/login', { email, password });
+    const response = await authAPI.login({ email, password });
+    const data = response.data;
 
     if (data.token) {
       localStorage.setItem('token', data.token);
-      if (data.refreshToken) {
-        localStorage.setItem('refreshToken', data.refreshToken);
-      }
-      if (data.user) {
-        localStorage.setItem('user', JSON.stringify(data.user));
-      }
+      localStorage.setItem('user', JSON.stringify(data.user || {}));
     }
 
     return data;
   } catch (error) {
-    console.error('Login error:', error);
+    console.error('Login error:', error.response?.data || error.message);
     throw error;
   }
 };
@@ -27,10 +23,29 @@ export const loginUser = async (email, password) => {
 // Register
 export const registerUser = async (formData) => {
   try {
-    const { data } = await apiClient.post('/auth/register', formData);
+    // Map form data to match API requirements
+    const apiPayload = {
+      name: formData.name,
+      email: formData.email,
+      password: formData.password,
+      password_confirmation: formData.confirmPassword || formData.password_confirmation,
+      bio: formData.bio || '',
+      phone: formData.phone || '',
+      id_sp: formData.id_sp || null,
+    };
+    
+    const response = await authAPI.register(apiPayload);
+    const data = response.data;
+    
+    // If token is provided after registration, auto-login
+    if (data.token) {
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user || {}));
+    }
+    
     return data;
   } catch (error) {
-    console.error('Register error:', error);
+    console.error('Register error:', error.response?.data || error.message);
     throw error;
   }
 };
@@ -39,24 +54,20 @@ export const registerUser = async (formData) => {
 export const logoutUser = async () => {
   try {
     const token = localStorage.getItem('token');
-    const refreshToken = localStorage.getItem('refreshToken');
     if (token) {
       // Try to logout on server, but don't fail if it doesn't work
       try {
-        const config = { headers: { Authorization: `Bearer ${token}` } };
-        const body = refreshToken ? { token: refreshToken } : null;
-        await apiClient.post('/auth/logout', body, config);
+        await authAPI.logout();
       } catch (logoutError) {
         // Silently ignore logout errors - token will be cleared locally anyway
         console.log('Server logout skipped (token may be expired)');
       }
     }
   } catch (error) {
-    // If logout fails (e.g. token already invalid), still clear local storage.
+    // If logout fails, still clear local storage.
     console.error('Logout error:', error);
   } finally {
     localStorage.removeItem('token');
-    localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
   }
 };
@@ -87,4 +98,48 @@ export const getToken = () => {
   return null;
 };
 
-export { apiClient };
+// Get user role
+export const getUserRole = () => {
+  const user = getCurrentUser();
+  return user?.role || 'visiteur';
+};
+
+// Check if user is admin
+export const isAdmin = () => {
+  const role = getUserRole();
+  return role === 'admin';
+};
+
+// Update user profile
+export const updateUserProfile = async (id, userData) => {
+  try {
+    const response = await authAPI.updateUser(id, userData);
+    const data = response.data;
+    
+    if (data.user) {
+      localStorage.setItem('user', JSON.stringify(data.user));
+    }
+    
+    return data;
+  } catch (error) {
+    console.error('Update profile error:', error);
+    throw error;
+  }
+};
+
+// Fetch current user data from API
+export const fetchCurrentUser = async () => {
+  try {
+    const response = await authAPI.getUser();
+    const user = response.data.user || response.data;
+    
+    localStorage.setItem('user', JSON.stringify(user));
+    
+    return user;
+  } catch (error) {
+    console.error('Fetch user error:', error);
+    throw error;
+  }
+};
+
+export { authAPI };
