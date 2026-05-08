@@ -17,9 +17,17 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <title>Infinity Club - University of BBA</title>
-        <meta name="description" content="A community of innovators, developers, and researchers" />
+        <title>Infinity Club - Algeria Tech Community</title>
+        <meta name="description" content="Student tech community in Algeria focused on coding, AI, and hackathons" />
+        <meta name="keywords" content="Infinity Club, Algeria tech, student developers, BBA university" />
+        <meta name="google-site-verification" content="zBg_KBzmN12HVr452bQ08dKjaynMrOHQRVYlDnNojNk" />
+        <meta property="og:title" content="Infinity Club - Algeria Tech Community" />
+        <meta property="og:description" content="Student tech community in Algeria focused on coding, AI, and hackathons" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://infinityfront.vercel.app" />
+        <meta property="og:image" content="/favicon.png" />
         <link rel="icon" href="/favicon.png" />
+        <link rel="canonical" href="https://infinityfront.vercel.app" />
       </head>
       <body>
         <ThemeProvider
