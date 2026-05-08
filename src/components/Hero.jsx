@@ -46,9 +46,9 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-green-950 to-slate-900">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-white via-green-50 to-emerald-100 dark:from-slate-900 dark:via-green-950 dark:to-slate-900">
       {/* Animated Grid Background */}
-      <div className="absolute inset-0 opacity-20">
+      <div className="absolute inset-0 opacity-40 dark:opacity-20">
         <div className="absolute inset-0" style={{
           backgroundImage: `linear-gradient(rgba(34, 197, 94, 0.1) 1px, transparent 1px),
                            linear-gradient(90deg, rgba(34, 197, 94, 0.1) 1px, transparent 1px)`,
@@ -89,18 +89,18 @@ export default function Hero() {
       <div className="container mx-auto px-4 py-20 text-center relative z-10">
         {/* Animated Badge */}
         <div 
-          className={`inline-flex items-center gap-2 px-5 py-2.5 mb-8 rounded-full bg-green-500/10 backdrop-blur-xl border border-green-400/30 transition-all duration-700 hover:bg-green-500/20 hover:border-green-400/50 hover:scale-105 ${
+          className={`inline-flex items-center gap-2 px-5 py-2.5 mb-8 rounded-full bg-white/80 dark:bg-green-500/10 backdrop-blur-xl border border-green-200 dark:border-green-400/30 transition-all duration-700 hover:bg-green-50 dark:hover:bg-green-500/20 hover:border-green-300 dark:hover:border-green-400/50 hover:scale-105 ${
             mounted ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-8'
           }`}
         >
           <div className="relative">
-            <Sparkles className="w-4 h-4 text-green-400 animate-spin-slow" />
-            <div className="absolute inset-0 blur-md bg-green-400 animate-pulse" />
+            <Sparkles className="w-4 h-4 text-green-600 dark:text-green-400 animate-spin-slow" />
+            <div className="absolute inset-0 blur-md bg-green-400/70 dark:bg-green-400 animate-pulse" />
           </div>
-          <span className="text-green-100 text-sm font-semibold tracking-wide">
+          <span className="text-green-700 dark:text-green-100 text-sm font-semibold tracking-wide">
             {getTranslation(language, 'heroTitle')}
           </span>
-          <div className="w-2 h-2 bg-green-400 rounded-full animate-ping" />
+          <div className="w-2 h-2 bg-green-500 dark:bg-green-400 rounded-full animate-ping" />
         </div>
 
         {/* Hero Title with Advanced Gradient */}
@@ -110,7 +110,7 @@ export default function Hero() {
           }`}
         >
           <span className="inline-block relative pb-4">
-            <span className="relative z-10 bg-gradient-to-r from-white via-green-200 to-white bg-clip-text text-transparent animate-gradient-x" 
+            <span className="relative z-10 bg-gradient-to-r from-slate-900 via-green-700 to-slate-900 dark:from-white dark:via-green-200 dark:to-white bg-clip-text text-transparent animate-gradient-x" 
                   style={{ backgroundSize: '200% auto' }}>
               {getTranslation(language, 'heroTitle')}
             </span>
@@ -143,7 +143,7 @@ export default function Hero() {
         </h1>
 
         <div 
-          className={`text-xl md:text-3xl lg:text-4xl text-green-100/90 mb-14 max-w-4xl mx-auto leading-relaxed transition-all duration-800 ${
+          className={`text-xl md:text-3xl lg:text-4xl text-slate-700 dark:text-green-100/90 mb-14 max-w-4xl mx-auto leading-relaxed transition-all duration-800 ${
             mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}
           style={{ transitionDelay: '600ms' }}
@@ -183,7 +183,7 @@ export default function Hero() {
 
           {/* Secondary Button */}
           <button
-            className="group relative bg-white/5 backdrop-blur-xl text-green-100 text-lg px-10 py-5 rounded-2xl font-bold border-2 border-green-400/30 overflow-hidden hover:bg-white/10 hover:border-green-400/50 transition-all duration-300 hover:scale-105"
+            className="group relative bg-white/85 dark:bg-white/5 backdrop-blur-xl text-green-800 dark:text-green-100 text-lg px-10 py-5 rounded-2xl font-bold border-2 border-green-200 dark:border-green-400/30 overflow-hidden hover:bg-green-50 dark:hover:bg-white/10 hover:border-green-300 dark:hover:border-green-400/50 transition-all duration-300 hover:scale-105"
           >
             <span className="relative flex items-center gap-2">
               {getTranslation(language, 'learnMore')}
@@ -206,7 +206,7 @@ export default function Hero() {
           ].map((item, i) => (
             <div
               key={i}
-              className="group relative px-6 py-3 bg-white/5 backdrop-blur-xl border border-green-400/20 rounded-full text-green-100 text-sm font-medium hover:bg-white/10 hover:border-green-400/40 transition-all duration-300 cursor-pointer hover:scale-110"
+              className="group relative px-6 py-3 bg-white/85 dark:bg-white/5 backdrop-blur-xl border border-green-200 dark:border-green-400/20 rounded-full text-green-800 dark:text-green-100 text-sm font-medium hover:bg-green-50 dark:hover:bg-white/10 hover:border-green-300 dark:hover:border-green-400/40 transition-all duration-300 cursor-pointer hover:scale-110"
               style={{ animationDelay: `${i * 100 + 1000}ms` }}
             >
               <span className={`absolute inset-0 rounded-full bg-gradient-to-r ${item.color} opacity-0 group-hover:opacity-20 transition-opacity duration-300 blur-sm`} />
@@ -230,19 +230,19 @@ export default function Hero() {
         style={{ transitionDelay: '1200ms' }}
       >
         <div className="flex flex-col items-center gap-3 cursor-pointer group" onClick={scrollToAbout}>
-          <span className="text-green-300/60 text-xs uppercase tracking-widest font-bold group-hover:text-green-300 transition-colors duration-500">
+          <span className="text-green-700/70 dark:text-green-300/60 text-xs uppercase tracking-widest font-bold group-hover:text-green-700 dark:group-hover:text-green-300 transition-colors duration-500">
             {getTranslation(language, 'scrollDown')}
           </span>
           <div className="relative">
             {/* Outer Glow Ring - Slower Pulse */}
-            <div className="absolute inset-[-8px] border-2 border-green-400/20 rounded-full animate-pulse-slower" />
+            <div className="absolute inset-[-8px] border-2 border-green-500/20 dark:border-green-400/20 rounded-full animate-pulse-slower" />
             
             {/* Mouse Container */}
-            <div className="relative w-7 h-11 border-2 border-green-400/60 rounded-full flex items-start justify-center p-1.5 group-hover:border-green-400 transition-all duration-500 bg-green-400/5 backdrop-blur-sm group-hover:bg-green-400/10">
-              <div className="w-1.5 h-3 bg-gradient-to-b from-green-400 to-green-300 rounded-full animate-scroll-down-slow group-hover:from-green-300 group-hover:to-green-200" />
+            <div className="relative w-7 h-11 border-2 border-green-600/60 dark:border-green-400/60 rounded-full flex items-start justify-center p-1.5 group-hover:border-green-500 dark:group-hover:border-green-400 transition-all duration-500 bg-green-500/10 dark:bg-green-400/5 backdrop-blur-sm group-hover:bg-green-500/15 dark:group-hover:bg-green-400/10">
+              <div className="w-1.5 h-3 bg-gradient-to-b from-green-600 to-green-500 dark:from-green-400 dark:to-green-300 rounded-full animate-scroll-down-slow group-hover:from-green-500 group-hover:to-green-400 dark:group-hover:from-green-300 dark:group-hover:to-green-200" />
             </div>
           </div>
-          <ArrowDown className="h-5 w-5 text-green-400/60 animate-bounce-slow group-hover:text-green-400 transition-colors duration-500" />
+          <ArrowDown className="h-5 w-5 text-green-600/70 dark:text-green-400/60 animate-bounce-slow group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors duration-500" />
         </div>
       </div>
 
