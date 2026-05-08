@@ -7,13 +7,13 @@ import { useAuth } from '@/contexts/AuthContext';
 
 export default function LoginPage() {
   const router = useRouter();
-  const { isAuth, loading } = useAuth();
+  const { isAuth, user, loading } = useAuth();
 
   useEffect(() => {
     if (!loading && isAuth) {
-      router.push('/dashboard');
+      router.push(user?.role === 'admin' ? '/dashboard' : '/profile');
     }
-  }, [isAuth, loading, router]);
+  }, [isAuth, user, loading, router]);
 
   if (loading) {
     return (

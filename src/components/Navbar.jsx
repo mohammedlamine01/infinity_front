@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Menu, X, User, Search } from 'lucide-react';
@@ -11,22 +11,34 @@ import LanguageSelector from '@/components/LanguageSelector';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { getTranslation } from '@/utils/i18n';
+import { isAdminFromCookie } from '@/utils/cookies';
 
 export default function Navbar() {
   const router = useRouter();
   const { language } = useLanguage();
   const { isAuth, user, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAdminCookie, setIsAdminCookie] = useState(false);
 
   const t = (key) => getTranslation(language, key);
 
+  // ✅ Check admin status from cookie on mount and when isAuth changes
+  useEffect(() => {
+    if (isAuth) {
+      setIsAdminCookie(isAdminFromCookie());
+    } else {
+      setIsAdminCookie(false);
+    }
+  }, [isAuth]);
+
   const handleLogout = async () => {
     await logout();
+    setIsAdminCookie(false);
     router.push('/');
   };
 
-  // Check if user is admin
-  const isAdmin = user?.role === 'admin';
+  // ✅ Use cookie-based admin check for instant feedback
+  const isAdmin = isAdminCookie || user?.role === 'admin';
 
   const navLinks = [
     { href: '/', label: t('home') },

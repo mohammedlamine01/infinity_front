@@ -6,17 +6,28 @@ import { useEffect, useState } from 'react';
 import Sidebar from '@/components/Dashboard/Sidebar';
 import LoadingPage from '@/components/LoadingPage';
 import { Menu } from 'lucide-react';
+import { isAdminFromCookie } from '@/utils/cookies';
 
 export default function DashboardLayout({ children }) {
   const { isAuth, user, loading } = useAuth();
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isAdminCookie, setIsAdminCookie] = useState(false);
 
   useEffect(() => {
-    if (!loading && !isAuth) {
-      router.push('/login');
-    } else if (!loading && user?.role !== 'admin') {
-      router.push('/');
+    if (!loading) {
+      if (!isAuth) {
+        router.push('/login');
+      } else {
+        // ✅ Check admin status from cookie for instant verification
+        const adminFromCookie = isAdminFromCookie();
+        setIsAdminCookie(adminFromCookie);
+        
+        // Fallback to user role if cookie not found
+        if (!adminFromCookie && user?.role !== 'admin') {
+          router.push('/');
+        }
+      }
     }
   }, [isAuth, user, loading, router]);
 
@@ -24,7 +35,10 @@ export default function DashboardLayout({ children }) {
     return <LoadingPage />;
   }
 
-  if (!isAuth || user?.role !== 'admin') {
+  // ✅ Use cookie-based check first, fallback to user role
+  const isAdmin = isAdminCookie || user?.role === 'admin';
+  
+  if (!isAuth || !isAdmin) {
     return null;
   }
 

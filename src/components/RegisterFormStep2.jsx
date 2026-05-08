@@ -13,7 +13,7 @@ import { getTranslation  } from '@/utils/i18n';
 import { registerUser } from '@/utils/auth';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, AlertCircle, CheckCircle } from 'lucide-react';
-import axios from 'axios';
+import { departmentsAPI, specialitesAPI } from '@/utils/api';
 
 export default function RegisterFormStep2({ formData, setFormData, onBack }) {
   const router = useRouter();
@@ -21,35 +21,75 @@ export default function RegisterFormStep2({ formData, setFormData, onBack }) {
   const { toast } = useToast();
   const t = (key) => getTranslation(language, key);
   const [loading, setLoading] = useState(false);
+  const [departments, setDepartments] = useState([]);
   const [specialites, setSpecialites] = useState([]);
+  const [selectedDepartmentId, setSelectedDepartmentId] = useState('');
   const [loadingSpecialites, setLoadingSpecialites] = useState(true);
   const [message, setMessage] = useState(null);
   const [messageType, setMessageType] = useState(null); // 'success' or 'error'
 
-  // Fetch specialites on component mount
+  const toArray = (payload) => {
+    if (Array.isArray(payload)) return payload;
+    if (Array.isArray(payload?.data)) return payload.data;
+    if (Array.isArray(payload?.specialites)) return payload.specialites;
+    if (Array.isArray(payload?.departments)) return payload.departments;
+    return [];
+  };
+
+  // Fetch departments on component mount
   useEffect(() => {
-    const fetchSpecialites = async () => {
+    const fetchDepartments = async () => {
       try {
-        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
-        const response = await axios.get(`${API_URL}/specialites`);
-        setSpecialites(response.data);
+        const response = await departmentsAPI.getAll();
+        const deptList = toArray(response?.data).map((dept) => ({
+          id: dept.id,
+          name: dept.nom_dep || dept.name || 'Unnamed Department',
+          description: dept.description || '',
+        }));
+        setDepartments(deptList);
       } catch (error) {
-        console.error('Error fetching specialites:', error);
+        console.error('Error fetching departments:', error);
         toast({
           title: language === 'ar'
-            ? 'فشل في تحميل التخصصات'
+            ? 'فشل في تحميل الأقسام'
             : language === 'fr'
-            ? 'Échec du chargement des spécialités'
-            : 'Failed to load specialties',
+            ? 'Échec du chargement des départements'
+            : 'Failed to load departments',
           variant: 'destructive',
         });
+      }
+    };
+
+    fetchDepartments();
+  }, [language, toast]);
+
+  // Fetch all specialites or department-specific specialites
+  useEffect(() => {
+    const fetchSpecialites = async () => {
+      setLoadingSpecialites(true);
+      try {
+        const response = selectedDepartmentId
+          ? await departmentsAPI.getSpecialites(selectedDepartmentId)
+          : await specialitesAPI.getAll();
+
+        const specList = toArray(response?.data).map((spec) => ({
+          id: spec.id,
+          name: spec.nom_sp || spec.name || 'Unnamed Specialty',
+          description: spec.description || '',
+          id_dep: spec.id_dep || spec.departement_id || spec.department_id || spec.department?.id || null,
+        }));
+
+        setSpecialites(specList);
+      } catch (error) {
+        console.error('Error fetching specialites:', error);
+        setSpecialites([]);
       } finally {
         setLoadingSpecialites(false);
       }
     };
 
     fetchSpecialites();
-  }, [language, toast]);
+  }, [selectedDepartmentId]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -57,6 +97,11 @@ export default function RegisterFormStep2({ formData, setFormData, onBack }) {
 
   const handleSelectChange = (value) => {
     setFormData({ ...formData, id_sp: value });
+  };
+
+  const handleDepartmentChange = (value) => {
+    setSelectedDepartmentId(value);
+    setFormData({ ...formData, id_sp: '' });
   };
 
   const handleSubmit = async (e) => {
@@ -162,6 +207,32 @@ export default function RegisterFormStep2({ formData, setFormData, onBack }) {
         )}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
+            <Label htmlFor="department">
+              {language === 'ar' ? 'القسم' : language === 'fr' ? 'Département' : 'Department'}
+            </Label>
+            <Select value={selectedDepartmentId} onValueChange={handleDepartmentChange}>
+              <SelectTrigger>
+                <SelectValue
+                  placeholder={
+                    language === 'ar'
+                      ? 'اختر القسم'
+                      : language === 'fr'
+                      ? 'Sélectionnez un département'
+                      : 'Select a department'
+                  }
+                />
+              </SelectTrigger>
+              <SelectContent>
+                {departments.map((department) => (
+                  <SelectItem key={department.id} value={String(department.id)}>
+                    {department.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="id_sp">{t('specialtyLabel')}</Label>
             {loadingSpecialites ? (
               <div className="flex items-center justify-center p-3 border rounded-md">
@@ -183,8 +254,8 @@ export default function RegisterFormStep2({ formData, setFormData, onBack }) {
                 </SelectTrigger>
                 <SelectContent>
                   {specialites.map((specialite) => (
-                    <SelectItem key={specialite.id} value={specialite.id.toString()}>
-                      {specialite.nom_sp || specialite.name}
+                    <SelectItem key={specialite.id} value={String(specialite.id)}>
+                      {specialite.name}
                     </SelectItem>
                   ))}
                 </SelectContent>

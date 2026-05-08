@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { clearAuthCookies, getTokenCookie, setTokenCookie } from './cookies';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://infinity-club.onrender.com/api';
 
@@ -15,7 +16,7 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('token');
+      const token = getTokenCookie();
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
@@ -45,7 +46,7 @@ api.interceptors.response.use(
             token: refreshToken,
           });
           
-          localStorage.setItem('token', data.token);
+          setTokenCookie(data.token);
           originalRequest.headers.Authorization = `Bearer ${data.token}`;
           return api(originalRequest);
         }
@@ -54,11 +55,22 @@ api.interceptors.response.use(
         localStorage.removeItem('token');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('user');
+        clearAuthCookies();
         
         if (typeof window !== 'undefined') {
           window.location.href = '/login';
         }
         return Promise.reject(refreshError);
+      }
+    }
+
+    // Clear stale auth state on unauthorized responses
+    if (error.response?.status === 401) {
+      clearAuthCookies();
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('user');
       }
     }
 

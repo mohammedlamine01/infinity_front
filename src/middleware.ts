@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const TOKEN_COOKIE = 'infinity_token';
-const ROLE_COOKIE = 'infinity_role';
+const TOKEN_COOKIE = 'authToken';
+const ROLE_COOKIE = 'userRole';
 
 export function middleware(request: NextRequest) {
   const token = request.cookies.get(TOKEN_COOKIE)?.value;
@@ -17,14 +17,16 @@ export function middleware(request: NextRequest) {
   const isAdminRoute = pathname === '/admin' || pathname.startsWith('/admin/');
 
   if (isAuthPage && token) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+    const normalizedRole = (role || '').trim().toLowerCase();
+    const redirectTo = normalizedRole === 'admin' ? '/dashboard' : '/profile';
+    return NextResponse.redirect(new URL(redirectTo, request.url));
   }
 
   if (isProtected && !token) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  if (isAdminRoute && role !== 'admin') {
+  if (isAdminRoute && (role || '').trim().toLowerCase() !== 'admin') {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 

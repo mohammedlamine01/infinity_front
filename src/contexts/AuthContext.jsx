@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { isAuthenticated, getCurrentUser, logoutUser as logoutUserUtil, fetchCurrentUser } from '@/utils/auth';
 import { useLoading } from '@/contexts/LoadingContext';
+import { setRoleCookie, setUserIdCookie, setUserNameCookie, setTokenCookie, setUserCookie, getTokenCookie } from '@/utils/cookies';
 
 const AuthContext = createContext();
 
@@ -43,6 +44,23 @@ export function AuthProvider({ children }) {
       setIsAuth(authStatus);
       setUser(currentUser);
       
+      // ✅ Set cookies if user is authenticated
+      if (authStatus && currentUser) {
+        const token = getTokenCookie();
+        if (token) setTokenCookie(token);
+        
+        // Set user data cookie
+        setUserCookie(currentUser);
+        
+        // Set individual field cookies
+        if (currentUser.role) setRoleCookie(currentUser.role);
+        if (currentUser.id) setUserIdCookie(currentUser.id);
+        if (currentUser.name) setUserNameCookie(currentUser.name);
+        else if (currentUser.prenom && currentUser.nom) {
+          setUserNameCookie(`${currentUser.prenom} ${currentUser.nom}`);
+        }
+      }
+      
       // Small delay for smooth transition
       await new Promise((resolve) => setTimeout(resolve, 200));
     } catch (error) {
@@ -81,6 +99,17 @@ export function AuthProvider({ children }) {
   };
 
   const login = (userData, token) => {
+    if (token) setTokenCookie(token);
+    if (userData) {
+      setUserCookie(userData);
+      if (userData.role) setRoleCookie(userData.role);
+      if (userData.id) setUserIdCookie(userData.id);
+      if (userData.name) setUserNameCookie(userData.name);
+      else if (userData.prenom && userData.nom) {
+        setUserNameCookie(`${userData.prenom} ${userData.nom}`);
+      }
+    }
+
     setIsAuth(true);
     setUser(userData);
   };

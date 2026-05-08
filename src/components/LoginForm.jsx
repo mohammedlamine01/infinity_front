@@ -40,16 +40,17 @@ export default function LoginForm() {
     try {
       await withLoading(async () => {
         const response = await loginUser(formData.email, formData.password);
+        const loggedUser = response.user || {};
         
         // Update auth context immediately
-        login(response.user, response.token);
+        login(loggedUser, response.token);
         
         toast({
           title: t('loginSuccess'),
           description: '',
         });
 
-        router.push('/dashboard');
+        router.push(loggedUser.role === 'admin' ? '/dashboard' : '/profile');
       }, 'Logging in...');
     } catch (error) {
       console.error('Login error:', error);

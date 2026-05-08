@@ -1,4 +1,14 @@
 import { authAPI } from './api';
+import { 
+  getTokenCookie,
+  getUserCookie,
+  setRoleCookie, 
+  setUserIdCookie, 
+  setUserNameCookie, 
+  setTokenCookie,
+  setUserCookie,
+  clearAuthCookies 
+} from './cookies';
 
 // ==================== AUTH FUNCTIONS ====================
 
@@ -9,8 +19,19 @@ export const loginUser = async (email, password) => {
     const data = response.data;
 
     if (data.token) {
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user || {}));
+      const user = data.user || {};
+      
+      // ✅ Save token and user to cookies (HTTP cookies - accessible server-side)
+      setTokenCookie(data.token);
+      setUserCookie(user);
+      
+      // ✅ Save individual user fields to cookies for faster access
+      if (user.role) setRoleCookie(user.role);
+      if (user.id) setUserIdCookie(user.id);
+      if (user.name) setUserNameCookie(user.name);
+      else if (user.prenom && user.nom) {
+        setUserNameCookie(`${user.prenom} ${user.nom}`);
+      }
     }
 
     return data;
@@ -39,8 +60,19 @@ export const registerUser = async (formData) => {
     
     // If token is provided after registration, auto-login
     if (data.token) {
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user || {}));
+      const user = data.user || {};
+      
+      // ✅ Save token and user to cookies (HTTP cookies - accessible server-side)
+      setTokenCookie(data.token);
+      setUserCookie(user);
+      
+      // ✅ Save individual user fields to cookies for faster access
+      if (user.role) setRoleCookie(user.role);
+      if (user.id) setUserIdCookie(user.id);
+      if (user.name) setUserNameCookie(user.name);
+      else if (user.prenom && user.nom) {
+        setUserNameCookie(`${user.prenom} ${user.nom}`);
+      }
     }
     
     return data;
@@ -53,7 +85,7 @@ export const registerUser = async (formData) => {
 // Logout
 export const logoutUser = async () => {
   try {
-    const token = localStorage.getItem('token');
+    const token = getToken();
     if (token) {
       // Try to logout on server, but don't fail if it doesn't work
       try {
@@ -67,16 +99,21 @@ export const logoutUser = async () => {
     // If logout fails, still clear local storage.
     console.error('Logout error:', error);
   } finally {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    // Cleanup legacy values if they exist
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      localStorage.removeItem('refreshToken');
+    }
+    // ✅ Clear auth cookies on logout
+    clearAuthCookies();
   }
 };
 
 // Get current user
 export const getCurrentUser = () => {
   if (typeof window !== 'undefined') {
-    const user = localStorage.getItem('user');
-    return user ? JSON.parse(user) : null;
+    return getUserCookie();
   }
   return null;
 };
@@ -84,7 +121,7 @@ export const getCurrentUser = () => {
 // Check auth status
 export const isAuthenticated = () => {
   if (typeof window !== 'undefined') {
-    const token = localStorage.getItem('token');
+    const token = getTokenCookie();
     return !!token;
   }
   return false;
@@ -93,7 +130,7 @@ export const isAuthenticated = () => {
 // Get token
 export const getToken = () => {
   if (typeof window !== 'undefined') {
-    return localStorage.getItem('token');
+    return getTokenCookie();
   }
   return null;
 };
@@ -104,10 +141,28 @@ export const getUserRole = () => {
   return user?.role || 'visiteur';
 };
 
+// ✅ NEW: Get user role from cookie (faster, server-safe)
+export const getUserRoleFromCookie = () => {
+  if (typeof window !== 'undefined') {
+    const { getRoleCookie } = require('./cookies');
+    return getRoleCookie() || 'visiteur';
+  }
+  return 'visiteur';
+};
+
 // Check if user is admin
 export const isAdmin = () => {
   const role = getUserRole();
   return role === 'admin';
+};
+
+// ✅ NEW: Check if user is admin from cookie (faster, server-safe)
+export const isAdminFromCookie = () => {
+  if (typeof window !== 'undefined') {
+    const { isAdminFromCookie: checkAdminCookie } = require('./cookies');
+    return checkAdminCookie();
+  }
+  return false;
 };
 
 // Update user profile
@@ -117,7 +172,11 @@ export const updateUserProfile = async (id, userData) => {
     const data = response.data;
     
     if (data.user) {
-      localStorage.setItem('user', JSON.stringify(data.user));
+      // ✅ Update cookies when profile is updated
+      setUserCookie(data.user);
+      if (data.user.role) setRoleCookie(data.user.role);
+      if (data.user.id) setUserIdCookie(data.user.id);
+      if (data.user.name) setUserNameCookie(data.user.name);
     }
     
     return data;
@@ -133,7 +192,14 @@ export const fetchCurrentUser = async () => {
     const response = await authAPI.getUser();
     const user = response.data.user || response.data;
     
-    localStorage.setItem('user', JSON.stringify(user));
+    // ✅ Update cookies when fetching current user
+    setUserCookie(user);
+    if (user.role) setRoleCookie(user.role);
+    if (user.id) setUserIdCookie(user.id);
+    if (user.name) setUserNameCookie(user.name);
+    else if (user.prenom && user.nom) {
+      setUserNameCookie(`${user.prenom} ${user.nom}`);
+    }
     
     return user;
   } catch (error) {

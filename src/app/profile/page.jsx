@@ -20,7 +20,7 @@ import AddEditLinkModal from '@/components/Profile/AddEditLinkModal';
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { isAuth, user, loading } = useAuth();
+  const { isAuth, user, loading, checkAuth } = useAuth();
   const { language } = useLanguage();
   const [links, setLinks] = useState([]);
   const [loadingLinks, setLoadingLinks] = useState(true);
@@ -36,6 +36,12 @@ export default function ProfilePage() {
       router.push('/login');
     }
   }, [isAuth, loading, router]);
+
+  useEffect(() => {
+    if (!loading && isAuth && !user) {
+      checkAuth();
+    }
+  }, [isAuth, user, loading, checkAuth]);
 
   useEffect(() => {
     if (user?.id) {

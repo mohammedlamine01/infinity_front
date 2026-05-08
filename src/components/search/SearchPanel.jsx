@@ -11,6 +11,7 @@ import UserLinks from './UserLinks';
 import StepIndicator from './StepIndicator';
 import Loader from '../Loader';
 import { searchTranslations } from '../../utils/searchTranslations';
+import { departmentsAPI, specialitesAPI } from '@/utils/api';
 
 export default function SearchPanel() {
   const { language } = useLanguage();
@@ -27,6 +28,15 @@ export default function SearchPanel() {
   const [specialites, setSpecialites] = useState([]);
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  const toArray = (payload) => {
+    if (Array.isArray(payload)) return payload;
+    if (Array.isArray(payload?.data)) return payload.data;
+    if (Array.isArray(payload?.departments)) return payload.departments;
+    if (Array.isArray(payload?.specialites)) return payload.specialites;
+    if (Array.isArray(payload?.users)) return payload.users;
+    return [];
+  };
 
   // Fetch departments on mount
   useEffect(() => {
@@ -50,18 +60,17 @@ export default function SearchPanel() {
   const fetchDepartments = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:8000/api/departments');
-      const data = await response.json();
-      // Map the data to include proper structure
-      const mappedData = Array.isArray(data) ? data.map(dept => ({
+      const response = await departmentsAPI.getAll();
+      const mappedData = toArray(response?.data).map((dept) => ({
         id: dept.id,
         name: dept.nom_dep || dept.name,
-        description: dept.description,
-        specialites_count: dept.specialites_count
-      })) : [];
+        description: dept.description || '',
+        specialites_count: dept.specialites_count || dept.specialties_count || 0,
+      }));
       setDepartments(mappedData);
     } catch (error) {
       console.error('Error fetching departments:', error);
+      setDepartments([]);
     } finally {
       setIsLoading(false);
     }
@@ -70,19 +79,17 @@ export default function SearchPanel() {
   const fetchSpecialites = async (deptId) => {
     setIsLoading(true);
     try {
-      const response = await fetch(`http://localhost:8000/api/departments/${deptId}/specialites`);
-      const data = await response.json();
-      // Extract specialites array from response
-      const specialitesArray = data.specialites || data;
-      const mappedData = Array.isArray(specialitesArray) ? specialitesArray.map(spec => ({
+      const response = await departmentsAPI.getSpecialites(deptId);
+      const mappedData = toArray(response?.data).map((spec) => ({
         id: spec.id,
         name: spec.nom_sp || spec.name,
-        description: spec.description,
-        users_count: spec.users_count
-      })) : [];
+        description: spec.description || '',
+        users_count: spec.users_count || 0,
+      }));
       setSpecialites(mappedData);
     } catch (error) {
       console.error('Error fetching specialites:', error);
+      setSpecialites([]);
     } finally {
       setIsLoading(false);
     }
@@ -91,13 +98,15 @@ export default function SearchPanel() {
   const fetchUsers = async (specId) => {
     setIsLoading(true);
     try {
-      const response = await fetch(`http://localhost:8000/api/specialites/${specId}/users`);
-      const data = await response.json();
-      // Extract users array from response
-      const usersArray = data.users || data;
-      setUsers(Array.isArray(usersArray) ? usersArray : []);
+      const response = await specialitesAPI.getUsers(specId);
+      const mappedUsers = toArray(response?.data).map((user) => ({
+        ...user,
+        name: user.name || [user.prenom, user.nom].filter(Boolean).join(' ') || 'Unknown User',
+      }));
+      setUsers(mappedUsers);
     } catch (error) {
       console.error('Error fetching users:', error);
+      setUsers([]);
     } finally {
       setIsLoading(false);
     }
