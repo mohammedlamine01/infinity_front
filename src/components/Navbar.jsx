@@ -55,7 +55,7 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-sm md:backdrop-blur supports-[backdrop-filter]:bg-background/80 md:supports-[backdrop-filter]:bg-background/60">
+    <nav className="mobile-nav-performance sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-0 md:backdrop-blur-sm supports-[backdrop-filter]:bg-background/95 md:supports-[backdrop-filter]:bg-background/60 transform-gpu will-change-[transform]">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}

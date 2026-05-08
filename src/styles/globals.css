@@ -1275,12 +1275,26 @@
 
 /* Mobile-first touch targets */
 @media (pointer: coarse) {
+  html,
+  body {
+    touch-action: pan-y;
+  }
+
   .btn,
   .input,
   button,
   a {
     min-height: var(--touch-target-min);
     min-width: var(--touch-target-min);
+  }
+}
+
+/* Reduce expensive repaint/compositing on small screens while scrolling */
+@media (max-width: 768px) {
+  .mobile-nav-performance {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    background: hsl(var(--background) / 0.98) !important;
   }
 }
 
