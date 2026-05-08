@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
 import { Menu, X, User, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,7 @@ import { isAdminFromCookie } from '@/utils/cookies';
 
 export default function Navbar() {
   const router = useRouter();
+  const pathname = usePathname();
   const { language } = useLanguage();
   const { isAuth, user, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -30,6 +31,11 @@ export default function Navbar() {
       setIsAdminCookie(false);
     }
   }, [isAuth]);
+
+  // Close the mobile menu as soon as route changes for snappier mobile navigation.
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [pathname]);
 
   const handleLogout = async () => {
     await logout();
@@ -49,7 +55,7 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-sm md:backdrop-blur supports-[backdrop-filter]:bg-background/80 md:supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
@@ -150,7 +156,7 @@ export default function Navbar() {
               <div className="flex flex-col gap-2 mt-4">
                 {/* Search Button - Visible to all users */}
                 <Button asChild variant="outline" className="w-full">
-                  <Link href="/search">
+                  <Link href="/search" onClick={() => setIsMenuOpen(false)}>
                     <Search className="h-4 w-4 mr-2" />
                     {t('searchMembers')}
                   </Link>
@@ -159,14 +165,14 @@ export default function Navbar() {
                 {isAuth ? (
                   <>
                     <Button asChild variant="outline" className="w-full">
-                      <Link href="/profile">
+                      <Link href="/profile" onClick={() => setIsMenuOpen(false)}>
                         <User className="h-4 w-4 mr-2" />
                         {t('profile')}
                       </Link>
                     </Button>
                     {isAdmin && (
                       <Button asChild variant="outline" className="w-full">
-                        <Link href="/dashboard">{t('dashboard')}</Link>
+                        <Link href="/dashboard" onClick={() => setIsMenuOpen(false)}>{t('dashboard')}</Link>
                       </Button>
                     )}
                     <Button onClick={handleLogout} variant="destructive" className="w-full">
@@ -176,10 +182,10 @@ export default function Navbar() {
                 ) : (
                   <>
                     <Button asChild variant="outline" className="w-full">
-                      <Link href="/login">{t('login')}</Link>
+                      <Link href="/login" onClick={() => setIsMenuOpen(false)}>{t('login')}</Link>
                     </Button>
                     <Button asChild className="w-full bg-hero hover:bg-hero/90 text-white">
-                      <Link href="/register">{t('joinUs')}</Link>
+                      <Link href="/register" onClick={() => setIsMenuOpen(false)}>{t('joinUs')}</Link>
                     </Button>
                   </>
                 )}

@@ -1,7 +1,9 @@
+import dynamic from 'next/dynamic';
 import Hero from '@/components/Hero';
-import About from '@/components/About';
-import Activities from '@/components/Activities';
-import Team from '@/components/Team';
+
+const About = dynamic(() => import('@/components/About'));
+const Activities = dynamic(() => import('@/components/Activities'));
+const Team = dynamic(() => import('@/components/Team'));
 
 export default function HomePage() {
   return (

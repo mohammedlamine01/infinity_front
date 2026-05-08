@@ -7,18 +7,42 @@ import { getTranslation } from '../utils/i18n';
 
 export default function Hero() {
   const [mounted, setMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [orbsData, setOrbsData] = useState([]);
+  const animationFrameRef = useRef(null);
   const { language } = useLanguage();
 
   useEffect(() => {
+    const mobileMedia = window.matchMedia('(max-width: 768px)');
+    const reducedMotionMedia = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    const updatePreferences = () => {
+      setIsMobile(mobileMedia.matches);
+      setPrefersReducedMotion(reducedMotionMedia.matches);
+    };
+
+    updatePreferences();
+    mobileMedia.addEventListener('change', updatePreferences);
+    reducedMotionMedia.addEventListener('change', updatePreferences);
+
+    return () => {
+      mobileMedia.removeEventListener('change', updatePreferences);
+      reducedMotionMedia.removeEventListener('change', updatePreferences);
+    };
+  }, []);
+
+  useEffect(() => {
     setMounted(true);
-    
+    const shouldReduceEffects = isMobile || prefersReducedMotion;
+
     // Generate orbs data to avoid hydration mismatch from Math.random()
-    const orbs = [...Array(15)].map((_, i) => {
-      const size = Math.random() * 300 + 100;
+    const orbCount = shouldReduceEffects ? 6 : 15;
+    const orbs = [...Array(orbCount)].map((_, i) => {
+      const size = shouldReduceEffects ? Math.random() * 140 + 80 : Math.random() * 300 + 100;
       const delay = Math.random() * 5;
-      const duration = Math.random() * 15 + 20;
+      const duration = shouldReduceEffects ? Math.random() * 10 + 24 : Math.random() * 15 + 20;
       const left = Math.random() * 100;
       const top = Math.random() * 100;
       const color = i % 3 === 0 
@@ -29,17 +53,34 @@ export default function Hero() {
       return { size, delay, duration, left, top, color };
     });
     setOrbsData(orbs);
-    
+
+    if (shouldReduceEffects) {
+      setMousePosition({ x: 50, y: 35 });
+      return;
+    }
+
     const handleMouseMove = (e) => {
-      setMousePosition({
-        x: (e.clientX / window.innerWidth) * 100,
-        y: (e.clientY / window.innerHeight) * 100
+      if (animationFrameRef.current) {
+        return;
+      }
+
+      animationFrameRef.current = requestAnimationFrame(() => {
+        setMousePosition({
+          x: (e.clientX / window.innerWidth) * 100,
+          y: (e.clientY / window.innerHeight) * 100
+        });
+        animationFrameRef.current = null;
       });
     };
-    
+
     window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, [isMobile, prefersReducedMotion]);
 
   const scrollToAbout = () => {
     document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
@@ -53,7 +94,9 @@ export default function Hero() {
           backgroundImage: `linear-gradient(rgba(34, 197, 94, 0.1) 1px, transparent 1px),
                            linear-gradient(90deg, rgba(34, 197, 94, 0.1) 1px, transparent 1px)`,
           backgroundSize: '50px 50px',
-          transform: `translate(${mousePosition.x * 0.02}px, ${mousePosition.y * 0.02}px)`
+          transform: isMobile || prefersReducedMotion
+            ? 'translate(0px, 0px)'
+            : `translate(${mousePosition.x * 0.02}px, ${mousePosition.y * 0.02}px)`
         }} />
       </div>
 
@@ -69,7 +112,9 @@ export default function Hero() {
               left: `${orb.left}%`,
               top: `${orb.top}%`,
               background: `radial-gradient(circle, ${orb.color})`,
-              animation: `float ${orb.duration}s ease-in-out ${orb.delay}s infinite`,
+              animation: isMobile || prefersReducedMotion
+                ? undefined
+                : `float ${orb.duration}s ease-in-out ${orb.delay}s infinite`,
             }}
           />
         ))}
@@ -79,7 +124,9 @@ export default function Hero() {
       <div 
         className="absolute inset-0 pointer-events-none transition-all duration-300"
         style={{
-          background: `radial-gradient(circle 800px at ${mousePosition.x}% ${mousePosition.y}%, 
+          background: isMobile || prefersReducedMotion
+            ? 'radial-gradient(circle 500px at 50% 35%, rgba(34, 197, 94, 0.12) 0%, transparent 65%)'
+            : `radial-gradient(circle 800px at ${mousePosition.x}% ${mousePosition.y}%, 
                        rgba(34, 197, 94, 0.15) 0%, 
                        transparent 60%)`,
         }}

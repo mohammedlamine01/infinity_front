@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { departmentsAPI, specialitesAPI, eventsAPI, usersAPI, authAPI } from '@/utils/api';
 import { Building2, GraduationCap, Calendar, Users, UserCheck } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -20,6 +20,19 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Try to read cached stats first for instant UI
+    try {
+      const raw = localStorage.getItem('dashboardStats');
+      if (raw) {
+        const cached = JSON.parse(raw);
+        setStats(cached);
+        setLoading(false);
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    // Fetch fresh stats in background
     fetchStats();
   }, []);
 
@@ -41,20 +54,37 @@ export default function DashboardPage() {
         users: usrs?.data?.length || 0,
         pendingUsers: pending?.data?.users?.length || pending?.data?.length || 0,
       });
+      // cache for quick re-display on next visit
+      try {
+        localStorage.setItem(
+          'dashboardStats',
+          JSON.stringify({
+            departments: depts?.data?.length || 0,
+            specialites: specs?.data?.length || 0,
+            events: evts?.data?.length || 0,
+            users: usrs?.data?.length || 0,
+            pendingUsers: pending?.data?.users?.length || pending?.data?.length || 0,
+          })
+        );
+      } catch (e) {
+        // ignore storage errors
+      }
     } catch (error) {
       console.error('❌ Error fetching stats:', error.response?.data || error.message);
     } finally {
       setLoading(false);
     }
   };
-
-  const statCards = [
-    { label: t('departments'), value: stats.departments, icon: Building2, color: 'bg-blue-500', href: '/dashboard/departments' },
-    { label: t('specialites'), value: stats.specialites, icon: GraduationCap, color: 'bg-green-500', href: '/dashboard/specialites' },
-    { label: t('events'), value: stats.events, icon: Calendar, color: 'bg-purple-500', href: '/dashboard/events' },
-    { label: t('users'), value: stats.users, icon: Users, color: 'bg-orange-500', href: '/dashboard/users' },
-    { label: t('pendingUsers'), value: stats.pendingUsers, icon: UserCheck, color: 'bg-amber-500', href: '/dashboard/pending-users' },
-  ];
+  const statCards = useMemo(
+    () => [
+      { key: 'departments', label: t('departments'), value: stats.departments, icon: Building2, color: 'bg-blue-500', href: '/dashboard/departments' },
+      { key: 'specialites', label: t('specialites'), value: stats.specialites, icon: GraduationCap, color: 'bg-green-500', href: '/dashboard/specialites' },
+      { key: 'events', label: t('events'), value: stats.events, icon: Calendar, color: 'bg-purple-500', href: '/dashboard/events' },
+      { key: 'users', label: t('users'), value: stats.users, icon: Users, color: 'bg-orange-500', href: '/dashboard/users' },
+      { key: 'pendingUsers', label: t('pendingUsers'), value: stats.pendingUsers, icon: UserCheck, color: 'bg-amber-500', href: '/dashboard/pending-users' },
+    ],
+    [stats, t]
+  );
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
