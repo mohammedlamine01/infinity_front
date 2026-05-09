@@ -10,6 +10,7 @@ import Footer from '@/components/Footer';
 import LoadingPage from '@/components/LoadingPage';
 import LoadingBar from '@/components/LoadingBar';
 import { Toaster } from '@/components/ui/sonner';
+import { SITE_URL, withBasePath } from '@/config/site';
 import '@/styles/globals.css';
 
 export default function RootLayout({ children }) {
@@ -22,7 +23,7 @@ export default function RootLayout({ children }) {
         <meta name="keywords" content="Infinity Club, Club BBA, نادي إنفينيتي, جامعة برج بوعريريج, club informatique BBA, student club Algeria, univ-bba, Mohamed El Bachir El Ibrahimi university club" />
         <meta name="robots" content="index, follow" />
         <meta name="author" content="Infinity Club - University of BBA" />
-        <link rel="canonical" href="https://infinityfront.vercel.app" />
+        <link rel="canonical" href={SITE_URL} />
 
         {/* ✅ Google Verification */}
         <meta name="google-site-verification" content="zBg_KBzmN12HVr452bQ08dKjaynMrOHQRVYlDnNojNk" />
@@ -31,8 +32,8 @@ export default function RootLayout({ children }) {
         <meta property="og:title" content="Infinity Club | Club BBA - University of BBA Algeria" />
         <meta property="og:description" content="Official student tech club at University of BBA, Algeria. Join us for coding workshops, hackathons, and tech talks." />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://infinityfront.vercel.app" />
-        <meta property="og:image" content="https://infinityfront.vercel.app/favicon.png" />
+        <meta property="og:url" content={SITE_URL} />
+        <meta property="og:image" content={`${SITE_URL}/favicon.png`} />
         <meta property="og:site_name" content="Infinity Club BBA" />
         <meta property="og:locale" content="en_US" />
 
@@ -40,7 +41,7 @@ export default function RootLayout({ children }) {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Infinity Club | Club BBA" />
         <meta name="twitter:description" content="Official student tech club at University of BBA, Algeria." />
-        <meta name="twitter:image" content="https://infinityfront.vercel.app/favicon.png" />
+        <meta name="twitter:image" content={`${SITE_URL}/favicon.png`} />
 
         {/* ✅ Structured Data (JSON-LD) — helps Google understand your club */}
         <script
@@ -51,8 +52,8 @@ export default function RootLayout({ children }) {
               "@type": "Organization",
               "name": "Infinity Club",
               "alternateName": ["Club BBA", "Infinity Club BBA", "نادي إنفينيتي"],
-              "url": "https://infinityfront.vercel.app",
-              "logo": "https://infinityfront.vercel.app/favicon.png",
+              "url": SITE_URL,
+              "logo": `${SITE_URL}/favicon.png`,
               "description": "Student tech club at University of BBA (Mohamed El Bachir El Ibrahimi), Bordj Bou Arreridj, Algeria.",
               "email": "infinity.tech@univ-bba.dz",
               "sameAs": [
@@ -73,7 +74,7 @@ export default function RootLayout({ children }) {
           }}
         />
 
-        <link rel="icon" href="/favicon.png" />
+        <link rel="icon" href={withBasePath('/favicon.png')} />
       </head>
       <body>
         <ThemeProvider
