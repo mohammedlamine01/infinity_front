@@ -6,16 +6,19 @@ import { motion } from 'framer-motion';
 import { 
   User, Mail, Phone, Calendar, Shield, 
   GraduationCap, Briefcase, Plus, ExternalLink,
-  Edit, Trash2, Link as LinkIcon 
+  Edit, Trash2, Link as LinkIcon, Pencil, X 
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { getTranslation } from '@/utils/i18n';
 import { linksAPI } from '@/utils/api';
+import { updateUserProfile } from '@/utils/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import AddEditLinkModal from '@/components/Profile/AddEditLinkModal';
 
 export default function ProfilePage() {
@@ -26,6 +29,14 @@ export default function ProfilePage() {
   const [loadingLinks, setLoadingLinks] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingLink, setEditingLink] = useState(null);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [profileForm, setProfileForm] = useState({
+    email: '',
+    phone: '',
+    bio: '',
+    avatar: '',
+  });
 
   const t = (key) => getTranslation(language, key);
   const isRTL = language === 'ar';
@@ -46,6 +57,17 @@ export default function ProfilePage() {
   useEffect(() => {
     if (user?.id) {
       fetchLinks();
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      setProfileForm({
+        email: user.email || '',
+        phone: user.phone || '',
+        bio: user.bio || '',
+        avatar: user.avatar || '',
+      });
     }
   }, [user]);
 
@@ -115,6 +137,29 @@ export default function ProfilePage() {
   const handleAddLink = () => {
     setEditingLink(null);
     setIsModalOpen(true);
+  };
+
+  const handleProfileChange = (field, value) => {
+    setProfileForm((current) => ({
+      ...current,
+      [field]: value,
+    }));
+  };
+
+  const handleSaveProfile = async (event) => {
+    event.preventDefault();
+
+    try {
+      setSavingProfile(true);
+      await updateUserProfile(user.id, profileForm);
+      setIsProfileModalOpen(false);
+      await checkAuth();
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      alert(error.response?.data?.message || 'Failed to update profile. Please try again.');
+    } finally {
+      setSavingProfile(false);
+    }
   };
 
   if (loading) {
@@ -199,9 +244,21 @@ export default function ProfilePage() {
                 </motion.div>
                 
                 <div className={`flex-1 pt-4 ${isRTL ? 'text-right' : 'text-left'}`}>
-                  <CardTitle className="text-3xl font-bold text-foreground mb-2" style={{ fontFamily: 'var(--font-sans)' }}>
-                    {user.prenom} {user.nom}
-                  </CardTitle>
+                  <div className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} items-start justify-between gap-4 mb-2`}>
+                    <CardTitle className="text-3xl font-bold text-foreground" style={{ fontFamily: 'var(--font-sans)' }}>
+                      {user.prenom} {user.nom}
+                    </CardTitle>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setIsProfileModalOpen(true)}
+                      className="shrink-0 border-primary/20 text-primary hover:bg-primary/10 hover:text-primary"
+                    >
+                      <Pencil className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                      {t('edit')}
+                    </Button>
+                  </div>
                   <div className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} gap-2 mb-3`}>
                     <Badge className={getRoleBadgeColor(user.role)}>
                       <Shield className={`h-3 w-3 ${isRTL ? 'ml-1' : 'mr-1'}`} />
@@ -413,6 +470,89 @@ export default function ProfilePage() {
           </Card>
         </motion.div>
       </div>
+
+      {isProfileModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setIsProfileModalOpen(false)} />
+
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            className="relative w-full max-w-2xl rounded-2xl border bg-background p-6 shadow-2xl"
+          >
+            <div className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} items-start justify-between gap-4 mb-6`}>
+              <div>
+                <h3 className="text-xl font-semibold text-foreground">{t('edit')} {t('profile')}</h3>
+                <p className="text-sm text-muted-foreground">Update your contact details and bio.</p>
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsProfileModalOpen(false)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+
+            <form onSubmit={handleSaveProfile} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="profile-email">{t('email')}</Label>
+                  <Input
+                    id="profile-email"
+                    type="email"
+                    value={profileForm.email}
+                    onChange={(event) => handleProfileChange('email', event.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="profile-phone">{t('phone')}</Label>
+                  <Input
+                    id="profile-phone"
+                    type="tel"
+                    value={profileForm.phone}
+                    onChange={(event) => handleProfileChange('phone', event.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="profile-avatar">Avatar URL</Label>
+                <Input
+                  id="profile-avatar"
+                  type="url"
+                  value={profileForm.avatar}
+                  onChange={(event) => handleProfileChange('avatar', event.target.value)}
+                  placeholder="https://..."
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="profile-bio">{t('bioLabel')}</Label>
+                <textarea
+                  id="profile-bio"
+                  value={profileForm.bio}
+                  onChange={(event) => handleProfileChange('bio', event.target.value)}
+                  rows={4}
+                  className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                />
+              </div>
+
+              <div className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} items-center justify-end gap-2 pt-2`}>
+                <Button type="button" variant="outline" onClick={() => setIsProfileModalOpen(false)}>
+                  {t('cancel')}
+                </Button>
+                <Button type="submit" disabled={savingProfile}>
+                  {savingProfile ? '...' : t('save')}
+                </Button>
+              </div>
+            </form>
+          </motion.div>
+        </div>
+      )}
 
       {/* Add/Edit Link Modal */}
       <AddEditLinkModal
