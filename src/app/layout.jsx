@@ -1,4 +1,3 @@
-'use client';
 import React from 'react';
 import { ThemeProvider } from '@/components/theme-provider';
 import { LanguageProvider } from '@/contexts/LanguageContext';
@@ -17,33 +16,24 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* ✅ Primary SEO */}
         <title>Infinity Club | Club BBA - نادي جامعة برج بوعريريج</title>
-        <meta name="description" content="Infinity Club is the official student tech club at University of BBA (Mohamed El Bachir El Ibrahimi), Bordj Bou Arreridj, Algeria. Workshops, hackathons, and tech talks." />
-        <meta name="keywords" content="Infinity Club, Club BBA, نادي إنفينيتي, جامعة برج بوعريريج, club informatique BBA, student club Algeria, univ-bba, Mohamed El Bachir El Ibrahimi university club" />
+        <meta name="description" content="Infinity Club is the official student tech club at University of BBA, Bordj Bou Arreridj, Algeria." />
+        <meta name="keywords" content="Infinity Club, Club BBA, نادي إنفينيتي, جامعة برج بوعريريج" />
         <meta name="robots" content="index, follow" />
         <meta name="author" content="Infinity Club - University of BBA" />
         <link rel="canonical" href={SITE_URL} />
-
-        {/* ✅ Google Verification */}
         <meta name="google-site-verification" content="zBg_KBzmN12HVr452bQ08dKjaynMrOHQRVYlDnNojNk" />
-
-        {/* ✅ Open Graph (Facebook, WhatsApp, LinkedIn) */}
         <meta property="og:title" content="Infinity Club | Club BBA - University of BBA Algeria" />
-        <meta property="og:description" content="Official student tech club at University of BBA, Algeria. Join us for coding workshops, hackathons, and tech talks." />
+        <meta property="og:description" content="Official student tech club at University of BBA, Algeria." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={SITE_URL} />
         <meta property="og:image" content={`${SITE_URL}/favicon.png`} />
         <meta property="og:site_name" content="Infinity Club BBA" />
         <meta property="og:locale" content="en_US" />
-
-        {/* ✅ Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Infinity Club | Club BBA" />
         <meta name="twitter:description" content="Official student tech club at University of BBA, Algeria." />
         <meta name="twitter:image" content={`${SITE_URL}/favicon.png`} />
-
-        {/* ✅ Structured Data (JSON-LD) — helps Google understand your club */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -54,7 +44,7 @@ export default function RootLayout({ children }) {
               "alternateName": ["Club BBA", "Infinity Club BBA", "نادي إنفينيتي"],
               "url": SITE_URL,
               "logo": `${SITE_URL}/favicon.png`,
-              "description": "Student tech club at University of BBA (Mohamed El Bachir El Ibrahimi), Bordj Bou Arreridj, Algeria.",
+              "description": "Student tech club at University of BBA, Bordj Bou Arreridj, Algeria.",
               "email": "infinity.tech@univ-bba.dz",
               "sameAs": [
                 "https://instagram.com/club_infinity",
@@ -73,7 +63,6 @@ export default function RootLayout({ children }) {
             })
           }}
         />
-
         <link rel="icon" href={withBasePath('/favicon.png')} />
       </head>
       <body>
