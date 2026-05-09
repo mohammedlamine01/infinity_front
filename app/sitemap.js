@@ -1,5 +1,10 @@
 export default function sitemap() {
   return [
-    { url: 'https://infinityfront.vercel.app', lastModified: new Date(), priority: 1 },
+    {
+      url: 'https://infinityfront.vercel.app',
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 1,
+    },
   ];
 }
